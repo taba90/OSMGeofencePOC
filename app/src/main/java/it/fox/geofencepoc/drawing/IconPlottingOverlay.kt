@@ -1,20 +1,22 @@
-package it.fox.geofencepoc.data.fragments
+package it.fox.geofencepoc.drawing
 
 import android.graphics.drawable.Drawable
 import android.view.MotionEvent
 import org.osmdroid.util.GeoPoint
+import org.osmdroid.util.PointReducer
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Overlay
+import java.util.UUID
 
 
-class PointPlottingOverlay(icon:Drawable) : Overlay(){
+const val PT_PREFIX:String="usr_added";
 
+class IconPlottingOverlay(m: Drawable): Overlay() {
 
-    val markerIcon:Drawable = icon;
+    private val markerIcon: Drawable=m
 
-
-    override fun onLongPress(e: MotionEvent, mapView: MapView): Boolean {
+    override fun onLongPress(e:MotionEvent, mapView: MapView): Boolean {
         if (markerIcon != null) {
             val pt = mapView.projection.fromPixels(e.x.toInt(), e.y.toInt(), null) as GeoPoint
             /*
@@ -29,25 +31,18 @@ class PointPlottingOverlay(icon:Drawable) : Overlay(){
             //just in case the point is off the map, let's fix the coordinates
             if (pt.longitude < -180) pt.longitude = pt.longitude + 360
             if (pt.longitude > 180) pt.longitude = pt.longitude - 360
-            //latitude is a bit harder. see https://en.wikipedia.org/wiki/Mercator_projection
-            if (pt.latitude > MapView.getTileSystem().maxLatitude) pt.latitude =
-                MapView.getTileSystem().maxLatitude
-            if (pt.latitude < MapView.getTileSystem().minLatitude) pt.latitude =
-                MapView.getTileSystem().minLatitude
             val m = Marker(mapView)
+            m.id= PT_PREFIX + (UUID.randomUUID().toString())
             m.position = pt
             m.icon = markerIcon
             m.image = markerIcon
-            m.title = "A demo title"
-            m.subDescription = """
-            A demo sub description
-            ${pt.latitude},${pt.longitude}
-            """.trimIndent()
-            m.snippet = "a snippet of information"
+            m.setOnMarkerClickListener(MarkerDeleteClickListener())
+            mapView.overlayManager.removeIf { ov: Overlay -> ov is Marker && ov.id.startsWith(PT_PREFIX) }
             mapView.overlayManager.add(m)
             mapView.invalidate()
             return true
         }
         return false
+
     }
 }

@@ -1,96 +1,60 @@
 package it.fox.geofencepoc
 
 import android.Manifest
+import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.pm.PackageManager
-import android.location.Location
-import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
-import android.preference.PreferenceManager
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
+import androidx.fragment.app.commit
+import androidx.preference.PreferenceManager
 import it.fox.osmgeofencepoc.R
-import org.osmdroid.api.IMapController
 import org.osmdroid.config.Configuration
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory
-import org.osmdroid.util.GeoPoint
-import org.osmdroid.views.MapView
+
 
 class MainActivity : AppCompatActivity() {
 
     private val TAG = "MainActivity"
 
 
-    @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
-        //handle permissions first, before map is created. not depicted here
-
-
-        //load/initialize the osmdroid configuration, this can be done
         val ctx = applicationContext
+        PreferenceManager.getDefaultSharedPreferences(ctx)
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx))
-        //setting this before the layout is inflated is a good idea
-        //it 'should' ensure that the map has a writable location for the map cache, even without permissions
-        //if no tiles are displayed, you can try overriding the cache path using Configuration.getInstance().setCachePath
-        //see also StorageUtils
-        //note, the load method also sets the HTTP User Agent to your application's package name, abusing osm's tile servers will get you banned based on this string
-
-        //inflate and create the map
-
-        //setting this before the layout is inflated is a good idea
-        //it 'should' ensure that the map has a writable location for the map cache, even without permissions
-        //if no tiles are displayed, you can try overriding the cache path using Configuration.getInstance().setCachePath
-        //see also StorageUtils
-        //note, the load method also sets the HTTP User Agent to your application's package name, abusing osm's tile servers will get you banned based on this string
-
-        //inflate and create the map
         setContentView(R.layout.activity_main)
-
-
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (isStoragePermissionGranted()) {
+        val permissionLauncher = registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) { isGranted ->
+            if (isGranted.values.stream().allMatch { v -> v }) {
+                if (savedInstanceState == null) {
+                    supportFragmentManager.commit {
+                        setReorderingAllowed(true)
+                        add(R.id.fragment_container,MapFragment())
+                    }
+                }
+            }
+            else {
+                // Do otherwise
             }
         }
+        val perms:MutableList<String> = mutableListOf(Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.INTERNET,Manifest.permission.ACCESS_NETWORK_STATE,Manifest.permission.READ_PHONE_STATE)
+        if (Build.VERSION.SDK_INT >= 23) perms.add(WRITE_EXTERNAL_STORAGE)
+        permissionLauncher.launch(perms.toTypedArray())
     }
-
-    fun isStoragePermissionGranted(): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED
-            ) {
-                Log.v(TAG, "Permission is granted")
-                true
-            } else {
-                Log.v(TAG, "Permission is revoked")
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                    ),
-                    1
-                )
-                false
-            }
-        } else { //permission is automatically granted on sdk<23 upon installation
-            Log.v(TAG, "Permission is granted")
-            true
-        }
-    }
-
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
+        //menuInflater.inflate(R.menu.menu_main, menu)
+        return false
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
