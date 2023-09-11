@@ -1,0 +1,18 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">OSM Geofence poc</string>
+    <string name="action_settings">Impostazioni</string>
+    <string name="next">Prossimo</string>
+    <string name="previous">Precedente</string>
+    <string name="yes">Sì</string>
+    <string name="no">No</string>
+    <string name="name">Nome</string>
+    <string name="radius">Raggio (metri)</string>
+    <string name="geofence_fields_title">Salva l\'area</string>
+    <string name="geofence_fields_msg">Inserisci un nome e un raggio per l\'area di lavora</string>
+    <string name="values_mandatory">E\' necessario inserire i valori richiesti per poter salvare l\'area</string>
+    <string name="submit">Invia</string>
+    <string name="cancel">Cancella</string>
+    <string name="ok">Ok</string>
+    <string name="delete_gf">Cancella l\'area</string>
+    <string name="gf_details">Dettagli dell\'area</string>
+</resources>

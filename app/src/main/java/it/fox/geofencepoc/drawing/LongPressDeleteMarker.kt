@@ -5,6 +5,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.asFlow
 import it.fox.geofencepoc.viewmodel.GeofenceViewModel
+import it.fox.osmgeofencepoc.R
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import java.util.UUID
@@ -22,7 +23,7 @@ class LongPressDeleteMarker(
             alert.setTitle("Rimuovi Geofence center")
             alert.setMessage("Sei sicuro di voler eliminare la località?")
             alert.setPositiveButton(
-                "Yes"
+                R.string.yes
             ) { dialog, _ ->
                 viewModel.getGeofence(UUID.fromString(id)).observe(viewLifecycleOwner) { gf ->
                     viewModel.delete(gf).invokeOnCompletion {
@@ -32,7 +33,7 @@ class LongPressDeleteMarker(
                 }
             }
             alert.setNegativeButton(
-                "No"
+                R.string.no
             ) { dialog, _ -> // close dialog
                 dialog.dismiss()
             }

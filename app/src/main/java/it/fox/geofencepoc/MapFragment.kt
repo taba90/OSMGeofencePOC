@@ -79,10 +79,9 @@ class MapFragment : Fragment(), View.OnLongClickListener{
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         mapView.setOnLongClickListener(this)
 
-
         val plotter = IconPlottingOverlay(this.resources.getDrawable(R.drawable.redpoint,null))
         mapView.overlayManager.add(plotter)
-        val dbPlotter=DBPointsOverlay(this.resources.getDrawable(R.drawable.bluepoint,null),mapView,viewModel,viewLifecycleOwner)
+        val dbPlotter=DBPointsOverlay(mapView,viewModel,viewLifecycleOwner)
         mapView.overlayManager.add(dbPlotter)
         save.setOnClickListener(
             OnClickSave(mapView,viewModel)

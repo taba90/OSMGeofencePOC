@@ -31,6 +31,7 @@ import org.osmdroid.util.GeoPoint
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.RuntimeException
+import java.util.Date
 
 class ProximityDetectorWorker(private val ctx: Context, params: WorkerParameters) :
     CoroutineWorker(ctx, params) {
@@ -58,8 +59,8 @@ class ProximityDetectorWorker(private val ctx: Context, params: WorkerParameters
                 val list = flow.first()
                 for (gf in list) {
                     val dist: Float = gf.computeDistance(location)
-                    if (dist < 200) {
-                        payload.add(RegisteredLocation(1L,deviceId,dist,location.latitude,location.longitude,gf.latitude,gf.longitude))
+                    if (dist < gf.distance) {
+                        payload.add(RegisteredLocation(1L,dist,location.latitude,location.longitude,gf.latitude,gf.longitude))
                     }
                 }
             }

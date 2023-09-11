@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import it.fox.geofencepoc.domain.Geofence
 import kotlinx.coroutines.flow.Flow
 import java.util.UUID
@@ -14,6 +15,9 @@ interface GeofenceDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(geofence: Geofence)
+
+    @Update
+    suspend fun update(geofence: Geofence)
 
     @Delete
     suspend fun delete(geofence: Geofence)

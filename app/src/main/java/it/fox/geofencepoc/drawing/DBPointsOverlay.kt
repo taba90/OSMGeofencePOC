@@ -1,16 +1,14 @@
 package it.fox.geofencepoc.drawing
 
-import android.graphics.Canvas
-import android.graphics.drawable.Drawable
+import android.graphics.Color
 import androidx.lifecycle.LifecycleOwner
 import it.fox.geofencepoc.viewmodel.GeofenceViewModel
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
-import org.osmdroid.views.Projection
-import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Overlay
+import org.osmdroid.views.overlay.Polygon
 
-class DBPointsOverlay(val marker: Drawable, val mapView: MapView, val viewModel: GeofenceViewModel, val viewLifecycleOwner: LifecycleOwner) : Overlay() {
+class DBPointsOverlay(val mapView: MapView, val viewModel: GeofenceViewModel, val viewLifecycleOwner: LifecycleOwner) : Overlay() {
 
 
     override fun onResume() {
@@ -18,18 +16,23 @@ class DBPointsOverlay(val marker: Drawable, val mapView: MapView, val viewModel:
         viewModel.allGeofenencesCenters.observe(viewLifecycleOwner) { geoflist ->
             for (gf in geoflist) {
                 mapView.overlays.removeIf { ov: Overlay ->
-                    ov is Marker && ov.id.equals(gf.id.toString())
+                    (ov is Polygon && ov.id.equals(gf.id.toString()))
                 }
-                val geoPoint = GeoPoint(gf.latitude,gf.longitude)
-                val m = Marker(mapView)
-                m.id = gf.id.toString()
-                m.position = geoPoint
-                m.icon = marker
-                m.image = marker
-                m.setOnMarkerClickListener(DeleteDBPointListener(mapView,viewModel, viewLifecycleOwner))
-                if (!mapView.overlayManager.contains(m)){
-                    mapView.overlayManager.add(m)
+                val oPolygon = Polygon(mapView);
+                val dist=gf.distance
+                val circlePoints: MutableList<GeoPoint> = mutableListOf()
+                var f=0F
+                while (f <360){
+                    circlePoints.add(GeoPoint(gf.latitude , gf.longitude).destinationPoint(dist.toDouble(), f.toDouble()))
+                    f+=1
                 }
+                oPolygon.points = circlePoints
+                oPolygon.outlinePaint.color= Color.TRANSPARENT
+                oPolygon.outlinePaint.strokeWidth=0f
+                oPolygon.fillPaint.color=0x7F00FF00
+                oPolygon.setOnClickListener(DetailsDBPointListener(viewModel, viewLifecycleOwner))
+                oPolygon.id=gf.id.toString()
+                mapView.overlays.add(oPolygon)
             }
             mapView.invalidate()
         }

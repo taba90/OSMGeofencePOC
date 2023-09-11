@@ -18,6 +18,8 @@ class GeofenceRepository private constructor(context: Context){
 
     suspend fun insert(geofence: Geofence) = database.geofenceDao().insert(geofence)
 
+    suspend fun update(geofence: Geofence) = database.geofenceDao().update(geofence)
+
     fun getGeofences() : Flow<MutableList<Geofence>> = database.geofenceDao().getGeofences()
 
     suspend fun getGeofence(id: UUID): Geofence =database.geofenceDao().getGeofence(id)

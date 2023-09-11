@@ -2,6 +2,7 @@ package it.fox.geofencepoc.domain
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.util.Date
 
 @Entity
 class RegisteredLocation(
