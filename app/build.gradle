@@ -10,6 +10,7 @@ android {
 
     defaultConfig {
         applicationId "it.fox.osmgeofencepoc"
+        resValue("string", "portal_endpoint", "http://localhost:9090")
         minSdk 26
         targetSdk 33
         versionCode 1
@@ -19,7 +20,12 @@ android {
     }
 
     buildTypes {
-        release {
+        getByName('debug') {
+            versionNameSuffix ".debug"
+            resValue "string", "app_version",
+                    "${defaultConfig.versionName}${versionNameSuffix}"
+        }
+        getByName('release') {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }

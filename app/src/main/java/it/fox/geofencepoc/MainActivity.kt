@@ -2,20 +2,18 @@ package it.fox.geofencepoc
 
 import android.Manifest
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-import android.annotation.SuppressLint
-import android.content.pm.PackageManager
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.commit
 import androidx.preference.PreferenceManager
+import it.fox.geofencepoc.broadcastreceivers.APP_STARTED
+import it.fox.geofencepoc.broadcastreceivers.LocationProximityStarter
 import it.fox.osmgeofencepoc.R
 import org.osmdroid.config.Configuration
 
@@ -47,14 +45,22 @@ class MainActivity : AppCompatActivity() {
                 // Do otherwise
             }
         }
-        val perms:MutableList<String> = mutableListOf(Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.INTERNET,Manifest.permission.ACCESS_NETWORK_STATE,Manifest.permission.READ_PHONE_STATE)
+        val perms:MutableList<String> = mutableListOf(Manifest.permission.FOREGROUND_SERVICE,Manifest.permission.RECEIVE_BOOT_COMPLETED,Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.INTERNET,Manifest.permission.ACCESS_NETWORK_STATE,Manifest.permission.READ_PHONE_STATE)
         if (Build.VERSION.SDK_INT >= 23) perms.add(WRITE_EXTERNAL_STORAGE)
         permissionLauncher.launch(perms.toTypedArray())
+        broadcastAppStarted()
     }
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         //menuInflater.inflate(R.menu.menu_main, menu)
         return false
+    }
+
+
+    private fun broadcastAppStarted() {
+        val jobReceiver = Intent(applicationContext, LocationProximityStarter::class.java)
+        jobReceiver.action = APP_STARTED
+        sendBroadcast(jobReceiver)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

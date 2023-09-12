@@ -17,4 +17,5 @@
     <string name="ok">Ok</string>
     <string name="delete_gf">Delete Geofence</string>
     <string name="gf_details">Geofence details</string>
+    <string name="location_proximity_srv">Register your location every 15 minutes if you are inside of one of the configured Geofences</string>
 </resources>

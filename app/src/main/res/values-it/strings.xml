@@ -15,4 +15,6 @@
     <string name="ok">Ok</string>
     <string name="delete_gf">Cancella l\'area</string>
     <string name="gf_details">Dettagli dell\'area</string>
+    <string name="location_proximity_srv">Registra la tua posizione ogni 15 minuti se ti trovi all\'interno di una delle aree configurate</string>
+
 </resources>
