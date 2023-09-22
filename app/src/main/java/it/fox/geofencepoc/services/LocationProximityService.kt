@@ -12,7 +12,10 @@ import it.fox.geofencepoc.domain.Geofence
 import it.fox.geofencepoc.domain.RegisteredLocation
 import it.fox.geofencepoc.repository.GeofenceRepository
 import it.fox.geofencepoc.utils.Utils
-import it.fox.osmgeofencepoc.R
+import it.fox.geofencepoc.R
+import it.fox.geofencepoc.UniqueDeviceId
+import it.fox.geofencepoc.domain.UserData
+import it.fox.geofencepoc.repository.UserDataRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -23,11 +26,14 @@ import kotlinx.coroutines.launch
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.Base64
+import java.util.Date
 
 class LocationProximityService: Service() {
 
     private val repository: GeofenceRepository = GeofenceRepository.get()
 
+    private val userRepository:UserDataRepository=UserDataRepository.get()
     private val job = SupervisorJob()
     private val scope = CoroutineScope(Dispatchers.IO + job)
 
@@ -80,19 +86,38 @@ class LocationProximityService: Service() {
         override fun onLocationChanged(location: Location) {
             if (location != null) {
                 val flow: Flow<MutableList<Geofence>> = repository.allGeofences
+                val flowud: Flow<MutableList<UserData>> = userRepository.allUserData
                 val payload:MutableList<RegisteredLocation> = mutableListOf()
                 scope.launch {
                     val list = flow.first()
+                    var userdatalist=flowud.first()
+                    var userData:UserData?=null
+                    if (!userdatalist.isEmpty()) {
+                        userData = userdatalist.get(0)
+                    }
                     for (gf in list) {
                         val dist: Float = gf.computeDistance(location)
                         if (dist < gf.distance) {
-                            payload.add(RegisteredLocation(0L,dist,location.latitude,location.longitude,gf.latitude,gf.longitude))
+                            payload.add(RegisteredLocation(0L,dist,location.latitude,location.longitude,gf.latitude,gf.longitude,UniqueDeviceId.getUniqueId(),Date()))
                         }
                     }
-                    val client: RegisteredLocationApi = Retrofit.Builder().baseUrl(getUrl()).addConverterFactory(
-                        GsonConverterFactory.create()).build().create(RegisteredLocationApi::class.java)
-                    val resp: Response<Any> =client.addLocations(payload)
-                    resp.code()
+                    if (payload.isNotEmpty()) {
+                        val client: RegisteredLocationApi =
+                            Retrofit.Builder().baseUrl(getUrl()).addConverterFactory(
+                                GsonConverterFactory.create(RegisteredLocationApi.DATE_CONVERTER)
+                            ).build().create(RegisteredLocationApi::class.java)
+                        try {
+                            var header: String? = null
+                            if (userData != null) {
+                                val userData = userdatalist.get(0)
+                                header = userData.iv + "$" + userData.privateKey
+                            }
+                            val resp: Response<Any> = client.addLocations(payload, header)
+                            resp.code()
+                        } catch (ex: Exception) {
+
+                        }
+                    }
                 }
             }
         }

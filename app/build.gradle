@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace 'it.fox.osmgeofencepoc'
+    namespace 'it.fox.geofencepoc'
     compileSdk 33
 
     defaultConfig {
-        applicationId "it.fox.osmgeofencepoc"
+        applicationId "it.fox.geofencepoc"
         resValue("string", "portal_endpoint", "http://localhost:9090")
         minSdk 26
         targetSdk 33

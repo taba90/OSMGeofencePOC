@@ -3,8 +3,6 @@
     <string name="action_settings">Settings</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
-    <string name="bt_center_map_description">Center on my location</string>
-    <string name="bt_follow_me_description">Follow me</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="name">Name</string>
@@ -18,4 +16,13 @@
     <string name="delete_gf">Delete Geofence</string>
     <string name="gf_details">Geofence details</string>
     <string name="location_proximity_srv">Register your location every 15 minutes if you are inside of one of the configured Geofences</string>
+    <string name="home_header">Home</string>
+    <string name="get_keys">Get your key</string>
+    <string name="define_geofences">Define your geofences</string>
+    <string name="generate_keys">Generate or view your private keys</string>
+    <string name="your_pvt_keys">Your private key</string>
+    <string name="your_pvt_iv">Your private IV</string>
+    <string name="save">Save</string>
+    <string name="generate">Generate</string>
+    <string name="app_settings">Define your app settings</string>
 </resources>

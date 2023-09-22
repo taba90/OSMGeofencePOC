@@ -6,6 +6,7 @@ import android.app.Activity
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,15 +14,17 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
 import it.fox.geofencepoc.domain.Geofence
 import it.fox.geofencepoc.drawing.DBPointsOverlay
 import it.fox.geofencepoc.drawing.IconPlottingOverlay
 import it.fox.geofencepoc.drawing.PT_PREFIX
 import it.fox.geofencepoc.repository.GeofenceRepository
 import it.fox.geofencepoc.viewmodel.GeofenceViewModel
-import it.fox.osmgeofencepoc.R
+import it.fox.geofencepoc.R
 import org.osmdroid.api.IMapController
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
@@ -47,6 +50,22 @@ class MapFragment : Fragment(), View.OnLongClickListener{
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        val permissionLauncher = registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) { isGranted ->
+            if (!isGranted.values.stream().allMatch { v -> v }) {
+                navigateTo(MapFragment())
+            }
+        }
+        val perms: MutableList<String> = mutableListOf(
+            Manifest.permission.RECEIVE_BOOT_COMPLETED,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.INTERNET,
+            Manifest.permission.ACCESS_NETWORK_STATE
+        )
+        if (Build.VERSION.SDK_INT >= 23) perms.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        permissionLauncher.launch(perms.toTypedArray())
         viewModel= GeofenceViewModel()
         locationManager= activity?.getSystemService(Activity.LOCATION_SERVICE) as LocationManager;
         val view: View = inflater.inflate(R.layout.map_layout,container,false)
@@ -87,6 +106,13 @@ class MapFragment : Fragment(), View.OnLongClickListener{
             OnClickSave(mapView,viewModel)
         )
 
+    }
+
+    fun navigateTo(fragment: Fragment){
+        activity?.supportFragmentManager?.commit {
+            setReorderingAllowed(true)
+            replace(R.id.fragment_container, fragment)
+        }
     }
 
 

@@ -5,7 +5,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.asFlow
 import it.fox.geofencepoc.viewmodel.GeofenceViewModel
-import it.fox.osmgeofencepoc.R
+import it.fox.geofencepoc.R
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import java.util.UUID

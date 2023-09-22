@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import java.lang.IllegalStateException
 import java.util.UUID
 
-private const val DB_NAME="geofence-database"
+const val DB_NAME="geofence-database"
 class GeofenceRepository private constructor(context: Context){
 
     private val database: GeofenceDatabase = Room.databaseBuilder(context.applicationContext,GeofenceDatabase::class.java,

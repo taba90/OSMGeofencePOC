@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.LifecycleOwner
 import it.fox.geofencepoc.viewmodel.GeofenceViewModel
-import it.fox.osmgeofencepoc.R
+import it.fox.geofencepoc.R
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Polygon
